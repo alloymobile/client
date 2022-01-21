@@ -1,5 +1,6 @@
 package com.alloymobiletech.client.service;
 
+import com.alloymobiletech.client.integration.SmsServiceCaller;
 import com.alloymobiletech.client.model.*;
 import com.alloymobiletech.client.repository.ClientRepository;
 import com.alloymobiletech.client.security.TokenProvider;
@@ -28,12 +29,15 @@ public class ClientService{
 
     private final GoogleMaps googleMaps;
 
-    public ClientService(ClientRepository clientRepository, TokenProvider tokenProvider, PasswordGenerator passwordGenerator, RoleService roleService, GoogleMaps googleMaps) {
+    private final SmsServiceCaller smsServiceCaller;
+
+    public ClientService(ClientRepository clientRepository, TokenProvider tokenProvider, PasswordGenerator passwordGenerator, RoleService roleService, GoogleMaps googleMaps,SmsServiceCaller smsServiceCaller) {
         this.clientRepository = clientRepository;
         this.tokenProvider = tokenProvider;
         this.passwordGenerator = passwordGenerator;
         this.roleService = roleService;
         this.googleMaps = googleMaps;
+        this.smsServiceCaller = smsServiceCaller;
     }
 
     public Flux<Client> findAllClient(){
@@ -118,5 +122,9 @@ public class ClientService{
             c.setAddresses(addresses);
             return this.updateClient(c.getId(),c);
         });
+    }
+
+    public void sendSms(){
+        this.smsServiceCaller.sendToken();
     }
 }

@@ -99,4 +99,10 @@ public class ClientResource {
     public Mono<SignInResponse> clientLogin(@RequestBody SignInRequest authRequest){
         return this.clientService.clientLogin(authRequest);
     }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(value="/api/v1/clients/sms", produces = "application/json")
+    public void sendSms(){
+        this.clientService.sendSms();
+    }
 }
