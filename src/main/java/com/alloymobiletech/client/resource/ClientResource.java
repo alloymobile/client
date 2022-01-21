@@ -35,13 +35,13 @@ public class ClientResource {
         return this.clientService.findAllClient();
     }
 
-    @SecurityRequirement(name = "bearerAuth")
+//    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = Client.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
             @ApiResponse(responseCode = "404", description = "Client not found") })
-    @GetMapping(value = BASE_URL +"/clients/{id}", produces = "application/json")
+    @GetMapping(value = "/clients/{id}", produces = "application/json")
     public Mono<Client> getClientById(@PathVariable(name="id") String id){
         return this.clientService.findClientById(id);
     }

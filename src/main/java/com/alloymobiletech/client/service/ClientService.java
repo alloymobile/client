@@ -41,13 +41,17 @@ public class ClientService{
     }
 
     public Mono<Client> findClientById(String id){
-        return this.clientRepository.findById(id);
+        return this.clientRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException()));
     }
 
     public Mono<Client> addClient(Client client){
-        client.setId(new ObjectId().toString());
-        client.setPassword(this.passwordGenerator.encode(client.getPassword()));
-        return this.clientRepository.save(client);
+        return this.clientRepository.findClientByEmail(client.getEmail())
+                .switchIfEmpty(Mono.defer(()->{
+                    client.setId(new ObjectId().toString());
+                    client.setPassword(this.passwordGenerator.encode(client.getPassword()));
+                    return this.clientRepository.save(client);
+                })).onErrorMap((e)->new RuntimeException());
     }
 
     public Mono<Client> updateClient(String id, Client client){
