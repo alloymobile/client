@@ -1,6 +1,9 @@
 package com.alloymobiletech.client.service;
 
-import com.alloymobiletech.client.integration.SmsServiceCaller;
+import com.alloymobiletech.client.integration.email.EmailServiceCaller;
+import com.alloymobiletech.client.integration.sms.SmsServiceCaller;
+import com.alloymobiletech.client.integration.sms.model.ResponseDTO;
+import com.alloymobiletech.client.integration.sms.model.SmsDTO;
 import com.alloymobiletech.client.model.*;
 import com.alloymobiletech.client.repository.ClientRepository;
 import com.alloymobiletech.client.security.TokenProvider;
@@ -13,7 +16,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,13 +36,16 @@ public class ClientService{
 
     private final SmsServiceCaller smsServiceCaller;
 
-    public ClientService(ClientRepository clientRepository, TokenProvider tokenProvider, PasswordGenerator passwordGenerator, RoleService roleService, GoogleMaps googleMaps,SmsServiceCaller smsServiceCaller) {
+    private final EmailServiceCaller emailServiceCaller;
+
+    public ClientService(ClientRepository clientRepository, TokenProvider tokenProvider, PasswordGenerator passwordGenerator, RoleService roleService, GoogleMaps googleMaps,SmsServiceCaller smsServiceCaller,EmailServiceCaller emailServiceCaller) {
         this.clientRepository = clientRepository;
         this.tokenProvider = tokenProvider;
         this.passwordGenerator = passwordGenerator;
         this.roleService = roleService;
         this.googleMaps = googleMaps;
         this.smsServiceCaller = smsServiceCaller;
+        this.emailServiceCaller = emailServiceCaller;
     }
 
     public Flux<Client> findAllClient(){
@@ -54,7 +62,17 @@ public class ClientService{
                 .switchIfEmpty(Mono.defer(()->{
                     client.setId(new ObjectId().toString());
                     client.setPassword(this.passwordGenerator.encode(client.getPassword()));
-                    return this.clientRepository.save(client);
+                    client.setEmailCode(this.passwordGenerator.emailTokenGenerator());
+                    client.setRoles(new ArrayList<>());
+                    client.setAddresses(new ArrayList<>());
+                    return this.clientRepository.save(client).flatMap(res1->{
+                        this.emailServiceCaller.sendRegistrationEmailLink("Bearer "+this.tokenProvider.generateToken(res1),res1);
+                        SmsDTO smsDTO = new SmsDTO();
+                        smsDTO.setNumber(res1.getPhone());
+                        smsDTO.setMessage("Token");
+                        this.smsServiceCaller.sendToken("Bearer "+this.tokenProvider.generateToken(res1),smsDTO);
+                        return Mono.just(res1);
+                    });
                 })).onErrorMap((e)->new RuntimeException());
     }
 
@@ -124,7 +142,4 @@ public class ClientService{
         });
     }
 
-    public void sendSms(){
-        this.smsServiceCaller.sendToken();
-    }
 }

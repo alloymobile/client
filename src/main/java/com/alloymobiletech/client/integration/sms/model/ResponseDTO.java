@@ -1,4 +1,4 @@
-package com.alloymobiletech.client.integration.model;
+package com.alloymobiletech.client.integration.sms.model;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
 package com.alloymobiletech.client.utils;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.bson.types.ObjectId;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -10,6 +10,7 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.Random;
 
 
 @Component
@@ -45,5 +46,14 @@ public class PasswordGenerator implements PasswordEncoder {
     @Override
     public boolean matches(CharSequence cs, String string) {
         return encode(cs).equals(string);
+    }
+
+    public String phoneTokenGenerator(){
+        int number = new Random().nextInt(999999);
+        return String.format("%06d", number);
+    }
+
+    public String emailTokenGenerator(){
+        return new ObjectId().toString();
     }
 }

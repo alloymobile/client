@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +20,14 @@ public class Client implements Serializable {
     @Id
     private String id;
     private String firstName;
-    private String middleName;
     private String lastName;
+    @Email(message = "The email address is invalid.")
     private String email;
+    @Size(min = 6,message = "Password must be min 6 characters")
     private String password;
     private String phone;
+    private String emailCode;
     private List<Role> roles = new ArrayList<>();
     private List<Address> addresses = new ArrayList<>();
+
 }

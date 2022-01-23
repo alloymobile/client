@@ -1,9 +1,6 @@
 package com.alloymobiletech.client.resource;
 
-import com.alloymobiletech.client.model.Address;
-import com.alloymobiletech.client.model.Client;
-import com.alloymobiletech.client.model.SignInRequest;
-import com.alloymobiletech.client.model.SignInResponse;
+import com.alloymobiletech.client.model.*;
 import com.alloymobiletech.client.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 import static com.alloymobiletech.client.config.SecurityConstants.BASE_URL;
 
@@ -90,7 +89,7 @@ public class ClientResource {
 
     //New user registration
     @PostMapping(value = "/clients/signup", produces = "application/json")
-    public Mono<Client> addClient(@RequestBody Client client){
+    public Mono<Client> addClient(@Valid @RequestBody Client client){
         return this.clientService.addClient(client);
     }
 
@@ -98,11 +97,5 @@ public class ClientResource {
     @PostMapping(value="/clients/signin", produces = "application/json")
     public Mono<SignInResponse> clientLogin(@RequestBody SignInRequest authRequest){
         return this.clientService.clientLogin(authRequest);
-    }
-
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping(value="/api/v1/clients/sms", produces = "application/json")
-    public void sendSms(){
-        this.clientService.sendSms();
     }
 }
