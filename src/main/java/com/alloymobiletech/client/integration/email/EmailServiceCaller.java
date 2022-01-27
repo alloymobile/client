@@ -22,11 +22,13 @@ public class EmailServiceCaller {
     }
 
     private Mono<ResponseDTO> sendEmail(String token,EmailDTO emailDTO){
-         return this.webClient.post().uri(emailUrl)
+        Mono<ResponseDTO> res =  this.webClient.post().uri(emailUrl)
                 .header(HttpHeaders.AUTHORIZATION,token)
                 .body(Mono.just(emailDTO), EmailDTO.class)
                 .retrieve()
                 .bodyToMono(ResponseDTO.class);
+        res.subscribe();
+        return res;
     }
 
     public Mono<ResponseDTO> sendRegistrationEmailLink(String token,Client dto){
@@ -42,8 +44,8 @@ public class EmailServiceCaller {
                 + "alloymobile Inc.";
 
         body = body.replace("[[name]]", dto.getFirstName() + " " + dto.getLastName());
-        String verifyURL = this.siteUrl + "?code=" + dto.getEmailCode();
-        body = body.replace("[[URL]]", verifyURL);
+//        String verifyURL = this.siteUrl + "?code=" + dto.getEmailCode();
+//        body = body.replace("[[URL]]", verifyURL);
         emailDTO.setBody(body);
         return this.sendEmail(token,emailDTO);
     }

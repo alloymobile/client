@@ -1,5 +1,6 @@
 package com.alloymobiletech.client.resource;
 
+import com.alloymobiletech.client.integration.sms.model.SmsDTO;
 import com.alloymobiletech.client.model.*;
 import com.alloymobiletech.client.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -97,5 +98,10 @@ public class ClientResource {
     @PostMapping(value="/clients/signin", produces = "application/json")
     public Mono<SignInResponse> clientLogin(@RequestBody SignInRequest authRequest){
         return this.clientService.clientLogin(authRequest);
+    }
+
+    @PostMapping(value="/clients/sms", produces = "application/json")
+    public void clientLogin(@RequestParam String token, @RequestBody SmsDTO sms){
+        this.clientService.sendSms(token,sms);
     }
 }

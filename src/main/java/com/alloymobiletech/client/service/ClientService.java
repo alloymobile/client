@@ -62,17 +62,9 @@ public class ClientService{
                 .switchIfEmpty(Mono.defer(()->{
                     client.setId(new ObjectId().toString());
                     client.setPassword(this.passwordGenerator.encode(client.getPassword()));
-                    client.setEmailCode(this.passwordGenerator.emailTokenGenerator());
                     client.setRoles(new ArrayList<>());
                     client.setAddresses(new ArrayList<>());
-                    return this.clientRepository.save(client).flatMap(res1->{
-                        this.emailServiceCaller.sendRegistrationEmailLink("Bearer "+this.tokenProvider.generateToken(res1),res1);
-                        SmsDTO smsDTO = new SmsDTO();
-                        smsDTO.setNumber(res1.getPhone());
-                        smsDTO.setMessage("Token");
-                        this.smsServiceCaller.sendToken("Bearer "+this.tokenProvider.generateToken(res1),smsDTO);
-                        return Mono.just(res1);
-                    });
+                    return this.clientRepository.save(client);
                 })).onErrorMap((e)->new RuntimeException());
     }
 
@@ -142,4 +134,7 @@ public class ClientService{
         });
     }
 
+    public void sendSms(String token, SmsDTO smsDTO){
+        this.smsServiceCaller.sendToken("Bearer "+token,smsDTO);
+    }
 }
