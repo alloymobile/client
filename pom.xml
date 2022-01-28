@@ -8,7 +8,7 @@
         <version>2.6.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.alloymobiletech</groupId>
+    <groupId>com.alloymobile</groupId>
     <artifactId>client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>client</name>
@@ -122,12 +122,12 @@
                 <configuration>
                     <schemaVersion>v2</schemaVersion>
                     <subscriptionId>${azure.subscriptionId}</subscriptionId>
-                    <resourceGroup>alloymobiletech-rg</resourceGroup>
-                    <appName>alloymobiletech-client-app</appName>
+                    <resourceGroup>alloymobile-rg</resourceGroup>
+                    <appName>alloymobile-client-app</appName>
                     <pricingTier>B1</pricingTier>
                     <region>canadaeast</region>
-                    <appServicePlanName>alloymobiletech-app-service-plan</appServicePlanName>
-                    <appServicePlanResourceGroup>alloymobiletech-rg</appServicePlanResourceGroup>
+                    <appServicePlanName>alloymobile-app-service-plan</appServicePlanName>
+                    <appServicePlanResourceGroup>alloymobile-rg</appServicePlanResourceGroup>
                     <runtime>
                         <os>Linux</os>
                         <javaVersion>Java 11</javaVersion>
