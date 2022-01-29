@@ -3,6 +3,7 @@ package com.alloymobile.client.resource;
 import com.alloymobile.client.config.SecurityConstants;
 import com.alloymobile.client.model.Client;
 import com.alloymobile.client.model.Country;
+import com.alloymobile.client.service.CountryBinding;
 import com.alloymobile.client.service.CountryService;
 import com.alloymobile.client.utils.PageData;
 import com.querydsl.core.types.Predicate;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/countries")
@@ -38,11 +40,15 @@ public class CountryResource{
     }
 
     @GetMapping( produces = "application/json")
-    public Mono<Page<Country>> getAllCountry(
-        @RequestParam(value = "page", required = false) Integer page,
-        @RequestParam(value = "size", required = false) Integer size,
-        @RequestParam(value = "sort", required = false) String sort){
-        return this.countryService.findAllCountry(this.page.getPage(page, size, sort));
+    public Mono<Page<Country>> getAllCountry(@QuerydslPredicate(root = Country.class,bindings = CountryBinding.class) Predicate predicate
+            , @RequestParam(name = "search",required = false) String search
+            , @RequestParam(value = "page", required = false) Integer page
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestParam(value = "sort", required = false) String sort){
+        if(Objects.nonNull(search)){
+            predicate = CountryBinding.createSearchQuery(search);
+        }
+        return this.countryService.findAllCountry(predicate,this.page.getPage(page, size, sort));
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")

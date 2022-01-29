@@ -23,21 +23,13 @@ public class CountryService {
         this.countryRepository = countryRepository;
     }
     
-    public Mono<Page<Country>> findAllCountry(Pageable pageable){
+    public Mono<Page<Country>> findAllCountry(Predicate predicate,Pageable pageable){
         return this.countryRepository.count()
                 .flatMap(countryCount -> {
-                    if(Objects.nonNull(pageable.getSort())){
-                        return this.countryRepository.findAll(pageable.getSort())
+                        return this.countryRepository.findAll(predicate,pageable.getSort())
                                 .buffer(pageable.getPageSize(),(pageable.getPageNumber() + 1))
                                 .elementAt(pageable.getPageNumber(), new ArrayList<>())
                                 .map(users -> new PageImpl<>(users, pageable, countryCount));
-                    }else{
-                        return this.countryRepository.findAll()
-                                .buffer(pageable.getPageSize(),(pageable.getPageNumber() + 1))
-                                .elementAt(pageable.getPageNumber(), new ArrayList<>())
-                                .map(users -> new PageImpl<>(users, pageable, countryCount));
-                    }
-
                 });
     }
 
