@@ -1,10 +1,14 @@
 package com.alloymobile.client.resource;
 
 import com.alloymobile.client.config.SecurityConstants;
+import com.alloymobile.client.model.Client;
 import com.alloymobile.client.model.Country;
 import com.alloymobile.client.service.CountryService;
+import com.querydsl.core.types.Predicate;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -13,7 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 
 @RestController
-@RequestMapping(SecurityConstants.BASE_URL +"/countries")
+@RequestMapping("/countries")
 @Tag(name = "Country", description = "The country API")
 public class CountryResource{
 
@@ -24,11 +28,11 @@ public class CountryResource{
     }
 
     @GetMapping( produces = "application/json")
-    public Flux<Country> getAllCountry(){
-        return this.countryService.findAllCountry();
+    public Flux<Country> getAllCountry(@QuerydslPredicate(root = Country.class) Predicate predicate){
+        return this.countryService.findAllCountry(predicate);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}", produces = "application/json")
     public Mono<Country> getCountryById(@PathVariable(name="id") String id){
         return this.countryService.findCountryById(id);

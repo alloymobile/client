@@ -9,7 +9,9 @@ import com.alloymobile.client.utils.PasswordGenerator;
 import com.alloymobile.client.integration.email.EmailServiceCaller;
 import com.alloymobile.client.security.TokenProvider;
 import com.google.maps.errors.ApiException;
+import com.querydsl.core.types.Predicate;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -46,8 +48,8 @@ public class ClientService{
         this.emailServiceCaller = emailServiceCaller;
     }
 
-    public Flux<Client> findAllClient(){
-        return this.clientRepository.findAll();
+    public Flux<Client> findAllClient(Predicate predicate, Sort sort){
+        return this.clientRepository.findAll(predicate,sort);
     }
 
     public Mono<Client> findClientById(String id){

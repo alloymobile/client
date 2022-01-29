@@ -1,8 +1,11 @@
 package com.alloymobile.client.service;
 
 import com.alloymobile.client.model.Country;
+import com.alloymobile.client.model.QCountry;
 import com.alloymobile.client.repository.CountryRepository;
+import com.querydsl.core.types.Predicate;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,8 +20,8 @@ public class CountryService {
         this.countryRepository = countryRepository;
     }
     
-    public Flux<Country> findAllCountry(){
-        return countryRepository.findAll();
+    public Flux<Country> findAllCountry(Predicate predicate){
+        return countryRepository.findAll(predicate);
     }
 
     public Mono<Country> findCountryById(String id){

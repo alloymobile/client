@@ -7,6 +7,7 @@ import com.alloymobile.client.model.Client;
 import com.alloymobile.client.model.SignInRequest;
 import com.alloymobile.client.model.SignInResponse;
 import com.alloymobile.client.service.ClientService;
+import com.querydsl.core.types.Predicate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,8 +37,8 @@ public class ClientResource {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Get all the clients", description = "It gets a list of all the clients in the system")
     @GetMapping(value= SecurityConstants.BASE_URL +"/clients", produces = "application/json")
-    public Flux<Client> getAllClient(){
-        return this.clientService.findAllClient();
+    public Flux<Client> getAllClient(@QuerydslPredicate(root = Client.class) Predicate predicate, Sort sort){
+        return this.clientService.findAllClient(predicate,sort);
     }
 
 //    @SecurityRequirement(name = "bearerAuth")
