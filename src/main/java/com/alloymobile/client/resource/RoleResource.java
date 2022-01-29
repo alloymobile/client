@@ -2,9 +2,7 @@ package com.alloymobile.client.resource;
 
 import com.alloymobile.client.application.config.SecurityConstants;
 import com.alloymobile.client.application.utils.PageData;
-import com.alloymobile.client.persistence.model.Client;
 import com.alloymobile.client.persistence.model.Role;
-import com.alloymobile.client.service.client.ClientBinding;
 import com.alloymobile.client.service.role.RoleBinding;
 import com.alloymobile.client.service.role.RoleService;
 import com.querydsl.core.types.Predicate;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
