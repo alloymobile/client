@@ -5,12 +5,15 @@ import com.alloymobile.client.model.QCountry;
 import com.alloymobile.client.repository.CountryRepository;
 import com.querydsl.core.types.Predicate;
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CountryService {
@@ -20,8 +23,22 @@ public class CountryService {
         this.countryRepository = countryRepository;
     }
     
-    public Flux<Country> findAllCountry(Predicate predicate){
-        return countryRepository.findAll(predicate);
+    public Mono<Page<Country>> findAllCountry(Pageable pageable){
+        return this.countryRepository.count()
+                .flatMap(countryCount -> {
+                    if(Objects.nonNull(pageable.getSort())){
+                        return this.countryRepository.findAll(pageable.getSort())
+                                .buffer(pageable.getPageSize(),(pageable.getPageNumber() + 1))
+                                .elementAt(pageable.getPageNumber(), new ArrayList<>())
+                                .map(users -> new PageImpl<>(users, pageable, countryCount));
+                    }else{
+                        return this.countryRepository.findAll()
+                                .buffer(pageable.getPageSize(),(pageable.getPageNumber() + 1))
+                                .elementAt(pageable.getPageNumber(), new ArrayList<>())
+                                .map(users -> new PageImpl<>(users, pageable, countryCount));
+                    }
+
+                });
     }
 
     public Mono<Country> findCountryById(String id){
