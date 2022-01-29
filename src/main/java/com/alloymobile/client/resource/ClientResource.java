@@ -1,12 +1,15 @@
 package com.alloymobile.client.resource;
 
-import com.alloymobile.client.config.SecurityConstants;
+import com.alloymobile.client.application.config.SecurityConstants;
+import com.alloymobile.client.application.utils.PageData;
 import com.alloymobile.client.integration.sms.model.SmsDTO;
-import com.alloymobile.client.model.Address;
-import com.alloymobile.client.model.Client;
-import com.alloymobile.client.model.SignInRequest;
-import com.alloymobile.client.model.SignInResponse;
-import com.alloymobile.client.service.ClientService;
+import com.alloymobile.client.persistence.model.Address;
+import com.alloymobile.client.persistence.model.Client;
+import com.alloymobile.client.persistence.model.SignInRequest;
+import com.alloymobile.client.persistence.model.SignInResponse;
+import com.alloymobile.client.service.client.ClientBinding;
+import com.alloymobile.client.service.client.ClientService;
+import com.alloymobile.client.service.country.CountryBinding;
 import com.querydsl.core.types.Predicate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,14 +18,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @Tag(name = "Client", description = "This is a client api related to all operations to a client")
@@ -30,15 +35,25 @@ public class ClientResource {
 
     private final ClientService clientService;
 
-    public ClientResource(ClientService clientService) {
+    private final PageData page;
+
+    public ClientResource(ClientService clientService, PageData page) {
         this.clientService = clientService;
+        this.page = page;
     }
 
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Get all the clients", description = "It gets a list of all the clients in the system")
     @GetMapping(value= SecurityConstants.BASE_URL +"/clients", produces = "application/json")
-    public Flux<Client> getAllClient(@QuerydslPredicate(root = Client.class) Predicate predicate, Sort sort){
-        return this.clientService.findAllClient(predicate,sort);
+    public Mono<Page<Client>> getAllClient(@QuerydslPredicate(root = Client.class,bindings = ClientBinding.class) Predicate predicate
+            , @RequestParam(name = "search",required = false) String search
+            , @RequestParam(value = "page", required = false) Integer page
+            , @RequestParam(value = "size", required = false) Integer size
+            , @RequestParam(value = "sort", required = false) String sort){
+        if(Objects.nonNull(search)){
+            predicate = ClientBinding.createSearchQuery(search);
+        }
+        return this.clientService.findAllClient(predicate,this.page.getPage(page, size, sort));
     }
 
 //    @SecurityRequirement(name = "bearerAuth")
@@ -65,12 +80,14 @@ public class ClientResource {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = SecurityConstants.BASE_URL +"/clients/{clientId}/roles/{roleId}", produces = "application/json")
     public Mono<Client> addRoleToClient(@PathVariable(name="clientId") String clientId, @PathVariable(name="roleId") String roleId){
         return this.clientService.addRoleToClient(clientId,roleId);
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = SecurityConstants.BASE_URL +"/clients/{clientId}/roles/{roleId}", produces = "application/json")
     public Mono<Client> deleteRoleToClient(@PathVariable(name="clientId") String clientId, @PathVariable(name="roleId") String roleId){
         return this.clientService.deleteRoleToClient(clientId,roleId);
@@ -104,10 +121,5 @@ public class ClientResource {
     @PostMapping(value="/clients/signin", produces = "application/json")
     public Mono<SignInResponse> clientLogin(@RequestBody SignInRequest authRequest){
         return this.clientService.clientLogin(authRequest);
-    }
-
-    @PostMapping(value="/clients/sms", produces = "application/json")
-    public void clientLogin(@RequestParam String token, @RequestBody SmsDTO sms){
-        this.clientService.sendSms(token,sms);
     }
 }

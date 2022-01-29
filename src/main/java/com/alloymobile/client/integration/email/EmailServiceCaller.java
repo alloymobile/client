@@ -2,7 +2,7 @@ package com.alloymobile.client.integration.email;
 
 import com.alloymobile.client.integration.email.model.EmailDTO;
 import com.alloymobile.client.integration.sms.model.ResponseDTO;
-import com.alloymobile.client.model.Client;
+import com.alloymobile.client.persistence.model.Client;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

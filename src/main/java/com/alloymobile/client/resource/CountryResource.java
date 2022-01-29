@@ -1,32 +1,25 @@
 package com.alloymobile.client.resource;
 
-import com.alloymobile.client.config.SecurityConstants;
-import com.alloymobile.client.model.Client;
-import com.alloymobile.client.model.Country;
-import com.alloymobile.client.service.CountryBinding;
-import com.alloymobile.client.service.CountryService;
-import com.alloymobile.client.utils.PageData;
+import com.alloymobile.client.application.config.SecurityConstants;
+import com.alloymobile.client.persistence.model.Country;
+import com.alloymobile.client.service.country.CountryBinding;
+import com.alloymobile.client.service.country.CountryService;
+import com.alloymobile.client.application.utils.PageData;
 import com.querydsl.core.types.Predicate;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/countries")
+@RequestMapping(SecurityConstants.BASE_URL+"/countries")
 @Tag(name = "Country", description = "The country API")
 public class CountryResource{
 
