@@ -14,8 +14,7 @@ public class SignInResponse extends Client implements Serializable {
 
     public SignInResponse(Client client, String token) {
         this.setId(client.getId());
-        this.setFirstName(client.getFirstName());
-        this.setLastName(client.getLastName());
+        this.setName(client.getName());
         this.setEmail(client.getEmail());
         this.setPhone(client.getPhone());
         this.setRoles(client.getRoles());

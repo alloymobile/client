@@ -54,13 +54,12 @@ public class ClientResource {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('CLIENT')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = Client.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error"),
             @ApiResponse(responseCode = "404", description = "Client not found") })
-    @GetMapping(value = "/clients/{id}", produces = "application/json")
+    @GetMapping(value = SecurityConstants.BASE_URL +"/clients/{id}", produces = "application/json")
     public Mono<Client> getClientById(@PathVariable(name="id") String id){
         return this.clientService.findClientById(id);
     }
@@ -124,5 +123,13 @@ public class ClientResource {
     @PostMapping(value=SecurityConstants.FREE_URL+"/clients/signin", produces = "application/json")
     public Mono<SignInResponse> clientLogin(@RequestBody SignInRequest authRequest){
         return this.clientService.clientLogin(authRequest);
+    }
+
+    //Login user
+    @GetMapping(value=SecurityConstants.FREE_URL+"/clients/signin/ ", produces = "application/json")
+    public Mono<String> clientLoginWithLinkedin(){
+        String client_id="78pyv56iocx2e1";
+        String client_secret="wMc1oucDk1JyGvPD";
+        return Mono.just("Hello Tapas");
     }
 }

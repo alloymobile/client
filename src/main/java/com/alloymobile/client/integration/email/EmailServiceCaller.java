@@ -43,7 +43,7 @@ public class EmailServiceCaller {
                 + "Thank you,<br>"
                 + "alloymobile Inc.";
 
-        body = body.replace("[[name]]", dto.getFirstName() + " " + dto.getLastName());
+        body = body.replace("[[name]]", dto.getName());
 //        String verifyURL = this.siteUrl + "?code=" + dto.getEmailCode();
 //        body = body.replace("[[URL]]", verifyURL);
         emailDTO.setBody(body);

@@ -21,11 +21,7 @@ public class ClientBinding  implements QuerydslBinderCustomizer<QClient> {
         QClient qClient = QClient.client;
 
         BooleanBuilder whereId = new BooleanBuilder();
-        whereId.and(qClient.firstName.containsIgnoreCase(search));
-        where.or(whereId);
-
-        whereId = new BooleanBuilder();
-        whereId.and(qClient.lastName.containsIgnoreCase(search));
+        whereId.and(qClient.name.containsIgnoreCase(search));
         where.or(whereId);
 
         whereId = new BooleanBuilder();

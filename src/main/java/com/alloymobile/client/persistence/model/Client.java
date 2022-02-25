@@ -18,12 +18,10 @@ import java.util.List;
 public class Client implements Serializable {
     @Id
     private String id;
-    private String firstName;
-    private String lastName;
+    private String name;
     @Email(message = "The email address is invalid.")
     private String email;
     @Size(min = 6,message = "Password must be min 6 characters")
-    @JsonIgnore
     private String password;
     private String phone;
     private List<Role> roles = new ArrayList<>();
