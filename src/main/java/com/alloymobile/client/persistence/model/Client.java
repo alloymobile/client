@@ -24,6 +24,7 @@ public class Client implements Serializable {
     @Size(min = 6,message = "Password must be min 6 characters")
     private String password;
     private String phone;
+    private AuthProvider provider;
     private List<Role> roles = new ArrayList<>();
     private List<Address> addresses = new ArrayList<>();
 

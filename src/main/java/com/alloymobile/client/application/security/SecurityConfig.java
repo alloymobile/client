@@ -16,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -49,8 +51,12 @@ public class SecurityConfig{
                 .pathMatchers(SecurityConstants.SIGN_UP_URL).permitAll()
                 .pathMatchers(SecurityConstants.LOGIN_URL).permitAll()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .anyExchange().authenticated()
                 .and()
+                .authorizeExchange(exchanges ->
+                        exchanges.anyExchange().authenticated()
+                )
+                .oauth2Login(withDefaults())
+                .oauth2Client(withDefaults())
                 .build();
     }
 

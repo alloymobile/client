@@ -16,13 +16,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.security.Principal;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -33,9 +42,12 @@ public class ClientResource {
 
     private final PageData page;
 
-    public ClientResource(ClientService clientService, PageData page) {
+    private final Environment environment;
+
+    public ClientResource(ClientService clientService, PageData page, Environment environment) {
         this.clientService = clientService;
         this.page = page;
+        this.environment = environment;
     }
 
     @SecurityRequirement(name = "bearerAuth")
@@ -126,10 +138,29 @@ public class ClientResource {
     }
 
     //Login user
-    @GetMapping(value=SecurityConstants.FREE_URL+"/clients/signin/ ", produces = "application/json")
-    public Mono<String> clientLoginWithLinkedin(){
-        String client_id="78pyv56iocx2e1";
-        String client_secret="wMc1oucDk1JyGvPD";
-        return Mono.just("Hello Tapas");
+    @GetMapping(value=SecurityConstants.FREE_URL+"/clients/linkedin")
+    ResponseEntity<Void> linkedinLogin() {
+        final String urls = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78pyv56iocx2e1&redirect_uri=http://localhost:8081/v1/clients/linkedin/signin&state=foobar&scope=r_liteprofile";
+        final String url = environment.getProperty("security.oauth2.client.registration.linkedin.auth-url")
+                +"?response_type=code&client_id="+environment.getProperty("security.oauth2.client.registration.linkedin.clientId")
+                +"&redirect_uri="+"&state=foobar&scope="+environment.getProperty("security.oauth2.client.registration.linkedin.scope");
+                return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(urls))
+                .build();
     }
+
+    //Login user
+    @GetMapping(value=SecurityConstants.FREE_URL+"/clients/linkedin/signin")
+    public String clientLoginLinkedin(@RequestParam(value = "state") String state, @RequestParam(value = "code") String code){
+        return code;
+    }
+
+
+    //Login user
+    @GetMapping(value=SecurityConstants.FREE_URL+"/clients/facebook")
+    public Mono<String> clientLoginFacebook(ReactiveSecurityContextHolder principal){
+        return principal.getContext()
+                .map(s->s.getAuthentication().getPrincipal().toString());
+    }
+
 }

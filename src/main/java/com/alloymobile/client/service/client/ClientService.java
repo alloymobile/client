@@ -93,6 +93,7 @@ public class ClientService{
                 .map(c-> new SignInResponse(c,this.tokenProvider.generateToken(c)));
     }
 
+
     public Mono<Client> addRoleToClient(String clientId, String roleId){
         return this.roleService.findRoleById(roleId).flatMap(r->{
             return this.findClientById(clientId).flatMap(c->{
